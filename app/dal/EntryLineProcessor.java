@@ -36,5 +36,9 @@ class EntryLineProcessor implements LineProcessor< FluentIterable< AddressBookEn
 	@Override
 	public FluentIterable< AddressBookEntry> getResult() {
 		return FluentIterable.from( entries);
+	}
+
+	public void clear() {
+		entries.clear();
 	}	
 }

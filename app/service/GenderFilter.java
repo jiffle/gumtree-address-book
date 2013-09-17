@@ -13,18 +13,22 @@ import com.google.common.base.Predicate;
 
 /** Filters for a particular gender
  */
-public class GenderPredecate implements Predicate< AddressBookEntry> {
-private final Gender genderFilter;
+public class GenderFilter implements Predicate< AddressBookEntry> {
+private final Gender i_genderFilter;
 
-	public GenderPredecate( Gender genderFilter) {
+	public GenderFilter( Gender genderFilter) {
 		if( genderFilter == null) {
 			throw new IllegalArgumentException( "GenderPredecate does not accept a null filter");
 		}
-		this.genderFilter = genderFilter;
+		i_genderFilter = genderFilter;
 	}
 
+	/** returns whether this meets criteria.
+	 * @param entry address book entry (not null).
+	 * @return true if matches this criteria
+	 */
 	@Override
 	public boolean apply( AddressBookEntry entry) {
-		return genderFilter.equals( entry.getGender());
+		return i_genderFilter.equals( entry.getGender());
 	}
 }

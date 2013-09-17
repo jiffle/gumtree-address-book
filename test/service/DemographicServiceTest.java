@@ -12,6 +12,7 @@ import org.junit.*;
 import org.mockito.*;
 
 import com.google.common.collect.FluentIterable;
+import common.InvalidInputException;
 
 import play.test.UnitTest;
 import pojo.AddressBookEntry;
@@ -20,6 +21,8 @@ import pojo.Gender;
 import dal.AddressBookEntrySupplier;
 
 public class DemographicServiceTest extends UnitTest {
+private static final List< AddressBookEntry> DATE_LIST = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DateTime.parse( "1980-01-02")), new AddressBookEntry( "Two", Gender.FEMALE, DateTime.parse( "1979-12-31")), new AddressBookEntry( "Three", Gender.FEMALE, DateTime.parse( "1980-01-01")));
+private static final List< AddressBookEntry> DUPLICATE_DATE_LIST = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DateTime.parse( "1980-01-01")), new AddressBookEntry( "Two", Gender.FEMALE, DateTime.parse( "1981-01-01")), new AddressBookEntry( "Three", Gender.FEMALE, DateTime.parse( "1980-01-01")));
 private static final DateTime DUMMY_DATE = DateTime.parse( "1980-01-01");
 @Mock
 private AddressBookEntrySupplier entrySupplier;
@@ -47,9 +50,9 @@ private DemographicService demographicService;
 
 	@Test
 	public void findByAgeMaxShouldReturnNameForList() {
-		List< AddressBookEntry> testList = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DateTime.parse( "1980-01-02")), new AddressBookEntry( "Two", Gender.FEMALE, DateTime.parse( "1981-01-01")), new AddressBookEntry( "Three", Gender.FEMALE, DateTime.parse( "1980-01-01")));
+		List< AddressBookEntry> testList = DATE_LIST;
 		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
-		assertEquals( "Expect that oldest element is found", "Three", demographicService.findNameByAgeMax());
+		assertEquals( "Expect that oldest element is found", "Two", demographicService.findNameByAgeMax());
 	}
 
 	@Test
@@ -61,13 +64,50 @@ private DemographicService demographicService;
 
 	@Test
 	public void findByAgeMaxShouldFindFirstEldestForDuplicate() {
-		List< AddressBookEntry> testList = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DateTime.parse( "1980-01-01")), new AddressBookEntry( "Two", Gender.FEMALE, DateTime.parse( "1981-01-01")), new AddressBookEntry( "Three", Gender.FEMALE, DateTime.parse( "1980-01-01")));
+		List< AddressBookEntry> testList = DUPLICATE_DATE_LIST;
 		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
 		assertEquals( "Expect that first oldest element is found when duplicates", "One", demographicService.findNameByAgeMax());
 	}
 
-/*	@Test
-	public void testCompareAgeInDays() {
-		fail( "Not yet implemented");
-	}*/
+	@Test
+	public void compareAgeInDaysShouldReturnPositiveWhenGreater() throws InvalidInputException {
+		List< AddressBookEntry> testList = DATE_LIST;
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		assertEquals( "Expect that oldest element is found", 1, demographicService.compareAgeInDays( "One", "Three"));
+	}
+	
+	@Test
+	public void compareAgeInDaysShouldReturnNegativeWhenLess() throws InvalidInputException {
+		List< AddressBookEntry> testList = DATE_LIST;
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		assertEquals( "Expect that oldest element is found", -2, demographicService.compareAgeInDays( "Two", "One"));
+	}
+	
+	@Test
+	public void compareAgeInDaysShouldReturnZeroWhenEqual() throws InvalidInputException {
+		List< AddressBookEntry> testList = DUPLICATE_DATE_LIST;
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		assertEquals( "Expect that oldest element is found", 0, demographicService.compareAgeInDays( "One", "Three"));
+	}
+	
+	@Test
+	public void findSingleNameMatchShouldReturnValidWhenSingleMatch() throws InvalidInputException {
+		List< AddressBookEntry> testList = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DUMMY_DATE), new AddressBookEntry( "Two", Gender.MALE, DUMMY_DATE), new AddressBookEntry( "Three", Gender.FEMALE, DUMMY_DATE));
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		assertEquals( "Expect that matching item returned", "Two", demographicService.findSingleNameMatch( "Two").getName());
+	}
+		
+	@Test(expected=InvalidInputException.class)
+	public void findSingleNameMatchShouldReturnThrowExceptionWhenNoMatch() throws InvalidInputException {
+		List< AddressBookEntry> testList = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DUMMY_DATE), new AddressBookEntry( "Two", Gender.MALE, DUMMY_DATE), new AddressBookEntry( "Three", Gender.FEMALE, DUMMY_DATE));
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		demographicService.findSingleNameMatch( "Four").getName();
+	}
+	
+	@Test(expected=InvalidInputException.class)
+	public void findSingleNameMatchShouldReturnThrowExceptionWhenMultipleMatches() throws InvalidInputException {
+		List< AddressBookEntry> testList = Arrays.asList( new AddressBookEntry( "One", Gender.FEMALE, DUMMY_DATE), new AddressBookEntry( "Two", Gender.MALE, DUMMY_DATE), new AddressBookEntry( "Two Twice", Gender.FEMALE, DUMMY_DATE));
+		when( entrySupplier.get()).thenReturn( FluentIterable.from( testList));
+		demographicService.findSingleNameMatch( "Two").getName();
+	}
 }

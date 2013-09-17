@@ -6,6 +6,11 @@
  */
 package service;
 
+import java.text.MessageFormat;
+
+import org.joda.time.Days;
+
+import play.Logger;
 import pojo.AddressBookEntry;
 import pojo.Gender;
 
@@ -29,7 +34,7 @@ private AddressBookEntrySupplier addressBookEntrySupplier;
 	 * @exception IllegalArgumentException if null parameter is passed.
 	 */
 	public int countByGender(Gender gender) {
-		return addressBookEntrySupplier.get().filter( new GenderPredecate( gender)).size();
+		return addressBookEntrySupplier.get().filter( new GenderFilter( gender)).size();
 	}
 	
 	/** Returns the name of the oldest entry 
@@ -43,7 +48,28 @@ private AddressBookEntrySupplier addressBookEntrySupplier;
 		return entries.toSortedList( new AgeComparator()).get( 0).getName();
 	}
 	
+	/** Calculates the interval in days between DOB of two entries
+	 * @param lowName the name of the lower entry
+	 * @param highName name of the higher entry
+	 * @return the number of days older - e.g. number of days before DOB - that the second is over the first
+	 * @throws InvalidInputException if either the first or second parameter could not be matched or gave duplicate matches
+	 */
 	public int compareAgeInDays( String lowName, String highName) throws InvalidInputException {
-		return 0;
+		AddressBookEntry lowEntry = findSingleNameMatch( lowName);
+		AddressBookEntry highEntry = findSingleNameMatch( highName);
+		return Days.daysBetween( highEntry.getDateOfBirth(), lowEntry.getDateOfBirth()).getDays();
+	}
+
+	AddressBookEntry findSingleNameMatch( String name) throws InvalidInputException {
+		FluentIterable< AddressBookEntry> matches = addressBookEntrySupplier.get().filter( new CaseInsensitiveSubstringNameFilter( name));
+		if( matches.isEmpty()) {
+			Logger.warn( "User input failure: Could not match [%s]", name);
+			throw new InvalidInputException( MessageFormat.format( "No match found for '{0}'.", name));
+		}
+		if( matches.size() > 1) {
+			Logger.warn( "User input failure: Multiple matches for [%s]", name);
+			throw new InvalidInputException( MessageFormat.format( "Multiple matches found for '{0}'.", name));
+		}
+		return matches.get( 0);
 	}
 }

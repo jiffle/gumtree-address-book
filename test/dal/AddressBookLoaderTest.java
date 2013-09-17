@@ -14,7 +14,6 @@ import play.test.UnitTest;
 import pojo.AddressBookEntry;
 import pojo.Gender;
 
-// TODO To test missing address book need to inject alternate filename values
 @InjectSupport
 public class AddressBookLoaderTest extends UnitTest {
 @Inject
@@ -28,4 +27,11 @@ static AddressBookLoader loader;
 			assertNotNull( "expect all entries to be non-null", entry);
 		}
 	}
+	
+	@Test
+	public void getShouldReturnCacheReturnedIterable() {
+		FluentIterable< AddressBookEntry> first = loader.get();
+		assertSame( "expect first and second instance same", first, loader.get());
+	}
+	
 }
