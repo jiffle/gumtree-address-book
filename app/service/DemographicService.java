@@ -64,11 +64,11 @@ private AddressBookEntrySupplier addressBookEntrySupplier;
 		FluentIterable< AddressBookEntry> matches = addressBookEntrySupplier.get().filter( new CaseInsensitiveSubstringNameFilter( name));
 		if( matches.isEmpty()) {
 			Logger.warn( "User input failure: Could not match [%s]", name);
-			throw new InvalidInputException( MessageFormat.format( "No match found for '{0}'.", name));
+			throw new InvalidInputException( MessageFormat.format( "No match found for \u2032{0}\u2032.", name));
 		}
 		if( matches.size() > 1) {
 			Logger.warn( "User input failure: Multiple matches for [%s]", name);
-			throw new InvalidInputException( MessageFormat.format( "Multiple matches found for '{0}'.", name));
+			throw new InvalidInputException( MessageFormat.format( "Multiple matches found for \u2032{0}\u2032.", name));
 		}
 		return matches.get( 0);
 	}

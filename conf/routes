@@ -5,6 +5,13 @@
 # Home page
 GET     /                                       Application.index
 
+# REST demographic API
+GET		/demographic/gender/count/{gender}		Demographic.genderCount
+GET		/demographic/age/maximum				Demographic.ageMaximum
+GET		/demographic/age/compare/{<.*>low},{<.*>high}		Demographic.ageCompare
+
+ 
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
