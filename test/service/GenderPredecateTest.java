@@ -10,7 +10,7 @@ import pojo.AddressBookEntry;
 import pojo.Gender;
 
 public class GenderPredecateTest extends UnitTest {
-private GenderPredecate predecate = new GenderPredecate( Gender.FEMALE);
+private final GenderPredecate predecate = new GenderPredecate( Gender.FEMALE);
 
 	@Test
 	public void applyShouldMatchSameGender() {

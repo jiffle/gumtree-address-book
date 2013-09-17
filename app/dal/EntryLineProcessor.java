@@ -1,3 +1,9 @@
+/** File:       EntryLineProcessor.java
+ *  Created by: davidhamilton
+ *          on: 16 Sep 2013
+ *  Project:    gumtree-address-book
+ *  Copyright Jiffle Limited &copy; 2013
+ */
 package dal;
 
 import java.io.IOException;

@@ -54,6 +54,8 @@ TBD
 
 ## Design Decisions
 
+Although TDD and tests were not mentioned in the requirements, I have written it as a test-driven project.
+
 I have recently been interested by Cory Maksymchuk's talk "3 Patterns for Cleaner Code" - http://www.infoq.com/presentations/3-Patterns-Cleaner-Code.
 This describes how separating an algorithm applied to a collection from the loop code can make testing the algorithm much easier. 
 Google Guava has implementations that are very similar to those described by Cory, so I decided to try it out for this project.
