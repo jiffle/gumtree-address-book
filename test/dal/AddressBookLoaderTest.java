@@ -23,11 +23,9 @@ static AddressBookLoader loader;
 	@Test
 	public void getShouldReturnValidIterableForValidAddressBook() {
 		FluentIterable< AddressBookEntry> entries = loader.get();
-		boolean hasResults = false;
+		assertFalse( "expect at least one entry", entries.isEmpty());
 		for( AddressBookEntry entry : entries) {
-			hasResults = true;
 			assertNotNull( "expect all entries to be non-null", entry);
 		}
-		assertTrue( "expect at least one entry", hasResults);
 	}
 }
